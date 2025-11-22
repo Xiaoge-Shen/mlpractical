@@ -295,8 +295,11 @@ class EMNISTDataProvider(DataProvider):
         (num_data, num_classes)
 
         """
-        
-        raise NotImplementedError
+        num_samples = int_targets.shape[0]
+        smooth_targets = np.ones((num_samples, self.num_classes)) * (alpha / self.num_classes)
+        smooth_targets[range(num_samples), int_targets] = 1 - alpha + (alpha / self.num_classes)
+
+        return smooth_targets
   
     
 

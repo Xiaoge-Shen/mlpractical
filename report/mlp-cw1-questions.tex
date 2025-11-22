@@ -1,5 +1,5 @@
 %% REPLACE SXXXXXX with your student number
-\def\studentNumber{SXXXXXX}
+\def\studentNumber{S2414220}
 
 
 %% START of YOUR ANSWERS
@@ -25,8 +25,19 @@
 
 
 %% Question 1:
+% \newcommand{\questionOne} {
+% \youranswer{Question 1 - Explain what these figures contain and how the curves evolve, and spot where overfitting occurs. Reason based on the min/max points and velocities (direction and magnitude of change) of the accuracy and error curves}
+% }
+
 \newcommand{\questionOne} {
-\youranswer{Question 1 - Explain what these figures contain and how the curves evolve, and spot where overfitting occurs. Reason based on the min/max points and velocities (direction and magnitude of change) of the accuracy and error curves}
+    \youranswer{
+        Based on Figure 1, the fundamental problem identified is \textbf{overfitting}.
+        \begin{itemize}
+            \item \textbf{Error Curves (Fig 1a):} The training error (solid line) decreases monotonically, approaching zero, indicating the model is effectively learning the training data. However, the validation error (dashed line) decreases initially but reaches a minimum around epoch 15, after which it begins to rise significantly. This divergence indicates that while the model continues to memorize the training set, its ability to generalize to unseen data is deteriorating.
+            \item \textbf{Accuracy Curves (Fig 1b):} Similarly, the training accuracy reaches near-perfect levels ($>95\%$), while the validation accuracy plateaus and slightly degrades.
+        \end{itemize}
+        This generalization gap suggests the model capacity is too high relative to the dataset size, leading it to learn noise rather than underlying patterns.
+        }
 }
 
 %% Question 2:
