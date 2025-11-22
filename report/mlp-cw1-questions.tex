@@ -42,28 +42,128 @@
 
 %% Question 2:
 \newcommand{\questionTwo} {
-\youranswer{Question 2 - Present your network width experiment results by using the relevant figure and table}
+\youranswer{
+    Figure~\ref{fig:width} and Table~\ref{tab:width_exp} present 
+    the results of varying network width (32, 64, and 128 hidden units).
+    
+    As shown in Figure~\ref{fig:width_acccurves}, validation accuracy 
+    improves from 79.0\% (32 units) to 80.5\% (64 units), with marginal 
+    gains to 80.7\% for 128 units. Figure~\ref{fig:width_errorcurves} 
+    reveals that while training error decreases monotonically with width, 
+    validation error exhibits a U-shaped pattern, with the 64-unit network 
+    achieving the lowest validation error (0.677).
+    
+    The 128-unit network demonstrates severe overfitting, with validation 
+    error increasing to 0.975 despite achieving the lowest training error 
+    (0.156), resulting in a generalization gap of 0.819.
+}
 }
 
 %% Question 3:
 \newcommand{\questionThree} {
-\youranswer{Question 3 - Discuss whether varying width affects the results in a consistent way, and whether the results are expected and match well with the prior knowledge (by which we mean your expectations as are formed from the relevant Theory and literature)}
+\youranswer{
+    The experimental results demonstrate a consistent yet non-linear 
+    relationship between network width and performance, aligning well 
+    with established theory on model capacity and generalization.
+    
+    \textbf{Consistent patterns:} Training error decreases monotonically 
+    with width (0.552 → 0.343 → 0.156), confirming that wider networks 
+    possess greater representational capacity. However, validation 
+    performance does not follow this trend, with the 64-unit network 
+    achieving the best generalization (validation error: 0.677).
+    
+    \textbf{Theoretical alignment:} These results exemplify the 
+    bias-variance tradeoff. The 32-unit network exhibits underfitting 
+    (high bias), with training and validation curves remaining close 
+    but at suboptimal error levels. The 128-unit network demonstrates 
+    severe overfitting (high variance), memorizing training data rather 
+    than learning generalizable patterns. The 64-unit configuration 
+    represents an optimal balance.
+    
+    \textbf{Literature context:} This phenomenon is well-documented 
+    in deep learning literature, where increasing model capacity without 
+    regularization eventually degrades generalization performance. 
+    The diminishing returns in validation accuracy (64→128: +0.2\%) 
+    despite dramatic improvements in training error (64→128: -54\%) 
+    suggest that regularization techniques are necessary to leverage 
+    larger network capacities effectively.
+}
 }
 
 %% Question 4:
 \newcommand{\questionFour} {
-\youranswer{Question 4 - Present your network depth experiment results by using the relevant figure and table}
+\youranswer{Figure~\ref{fig:depth} and Table~\ref{tab:depth_exps} present the 
+results of varying network depth from 1 to 3 hidden layers. While 
+validation accuracy increases modestly with depth (80.2\% → 81.6\% 
+→ 82.1\%), validation error exhibits a concerning trend, escalating 
+from 0.989 (1 layer) to 1.734 (3 layers) — a 75\% increase.
+
+The 2- and 3-layer networks achieve very low training errors (~0.1) 
+and high training accuracies (~96\%), yet their validation errors 
+are significantly worse than the single-layer network, revealing 
+severe overfitting.}
 }
 
 %% Question 5:
 \newcommand{\questionFive} {
-\youranswer{Question 5 - Discuss whether varying depth affects the results in a consistent way, and whether the results are expected and match well with the prior knowledge (by which we mean your expectations as are formed from the relevant Theory and literature)}
+\youranswer{The results reveal a critical insight: **increased depth without 
+regularization degrades generalization performance** despite marginal 
+improvements in validation accuracy.
+
+\textbf{Overfitting severity:} The generalization gap grows 
+dramatically with depth: 0.825 (1 layer) → 1.445 (2 layers) → 
+1.621 (3 layers). This is substantially worse than the width 
+experiments (Q2-Q3), where the maximum gap was 0.819.
+
+\textbf{Accuracy vs. Cross-Entropy Discrepancy:} The contradiction 
+between rising validation accuracy and exploding validation error 
+indicates that deeper models make correct predictions but with 
+poorly calibrated probability estimates — a hallmark of memorization 
+rather than generalization.
+
+\textbf{Comparison to Theory:} While deeper networks theoretically 
+possess greater representational power, this advantage is nullified 
+by overfitting in the absence of regularization techniques. The 
+results underscore that **depth is a double-edged sword**, requiring 
+careful regularization (Dropout, Batch Normalization) to realize its 
+benefits — motivating the regularization experiments in subsequent 
+sections.}
 }
 
 
 %% Question 6:
 \newcommand{\questionSix} {
-\youranswer{Question 6 - Explain how one could use a combination of L1 and L2 regularisation. Discuss any potential benefits of this approach. Present an equation for this combined loss function and explain all relevant variables and hyperparameters.}
+\youranswer{
+    Elastic Net regularization combines L1 and L2 penalties to leverage 
+    the complementary strengths of both approaches: L1's feature selection 
+    (sparsity) and L2's weight shrinkage (stability).
+    
+    \textbf{Combined Loss Function:}
+    \begin{equation}
+        \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{CE}}(y, t) + 
+        \lambda_1 \sum_{l=1}^{L} \|W^{(l)}\|_1 + 
+        \lambda_2 \sum_{l=1}^{L} \|W^{(l)}\|_2^2
+    \end{equation}
+    
+    where:
+    \begin{itemize}
+        \item $\mathcal{L}_{\text{CE}}(y, t)$ is the cross-entropy loss 
+              between predictions $y$ and targets $t$
+        \item $W^{(l)}$ denotes the weight matrix of layer $l$
+        \item $\|W^{(l)}\|_1 = \sum_{i,j} |w_{ij}^{(l)}|$ is the L1 norm 
+              (Manhattan distance)
+        \item $\|W^{(l)}\|_2^2 = \sum_{i,j} (w_{ij}^{(l)})^2$ is the 
+              squared L2 norm (Euclidean distance)
+        \item $\lambda_1 \geq 0$ controls sparsity (higher → more zeros)
+        \item $\lambda_2 \geq 0$ controls shrinkage (higher → smaller weights)
+        \item $L$ is the total number of layers with learnable parameters
+    \end{itemize}
+    
+    \textbf{Benefits:} This combination handles correlated features better 
+    than L1 alone, produces sparse solutions unlike L2 alone, and provides 
+    a flexible regularization spectrum by tuning $\lambda_1$ and $\lambda_2$ 
+    independently.
+}
 }
 
 
@@ -216,10 +316,10 @@ Question Table 2 - Fill in Table 2 with the results from your experiments varyin
     \toprule
         \# Hidden Layers & Val. Acc. & Train Error & Val. Error \\
     \midrule
-         1               &      --.-      &   -.--- & -.---                \\
-         2               &      --.-      &   -.--- & -.---                \\
-         3               &      --.-      &   -.--- & -.---                \\ 
-    \bottomrule
+        1                 &      80.2      &   0.164 & 0.989                \\
+        2                 &      81.6      &   0.103 & 1.548                \\
+        3                 &      82.1      &   0.113 & 1.734                \\
+    \bottomrule  
     \end{tabular}
     \caption{Validation accuracy (\%) and training/validation error (in terms of cross-entropy error) for varying network depths on the EMNIST dataset.}
     \label{tab:depth_exps}
@@ -243,23 +343,23 @@ Question Table 3 - Fill in Table 3 with the results from your experiments for th
     \midrule
         \multirow{4}*{Dropout}
                  & 0.6                   &  80.7                &      0.549 & 0.593     \\
-                 & 0.7 & --.- & -.--- & -.---  \\
+                 & 0.7 & 83.6 & 0.29 & 0.547  \\
                  & 0.85 & 85.1 &  0.329 &  0.434 \\
                  & 0.97 & 85.4 &  0.244 & 0.457  \\
     \midrule
         \multirow{4}*{L1 penalty}
                  & 5e-4 & 79.5 & 0.642 & 0.658 \\
-                 & 1e-3 & --.- & -.--- & -.--- \\
+                 & 1e-3 & 7.00 & 1.062 & 1.064 \\
                  & 5e-3 & 2.41 & 3.850 & 3.850 \\
                  & 5e-2 & 2.20 & 3.850 & 3.850 \\
     \midrule
         \multirow{4}*{L2 penalty}  
                  & 5e-4 & 85.1 & 0.306 & 0.460 \\
-                 & 1e-3 & --.- & -.--- & -.--- \\
+                 & 1e-3 & 81.4 & 0.600 & 0.624 \\
                  & 5e-3 & 81.3 & 0.586 & 0.607 \\
                  & 5e-2 & 39.2 & 2.258 & 2.256  \\
     \midrule
-        Label smoothing & 0.1 & --.- & -.--- & -.--- \\
+        Label smoothing & 0.1 & 83.0 & 1.060 & 0.646 \\
     \bottomrule
     \end{tabular}
     \caption{Results of all hyperparameter search experiments. \emph{italics} indicate the best results per series (Dropout, L1 Regularisation, L2 Regularisation, Label smoothing) and \textbf{bold} indicates the best overall.}
@@ -273,6 +373,22 @@ Question Table 3 - Fill in Table 3 with the results from your experiments for th
 \newcommand{\questionTableFour} {
 \youranswer{
 Question Table 4 - Add a table with the results from your 4 experiments (by which we mean: 4 training runs, NOT 4 sets of experiments) varying your hyperparameters for the combination of L1 and L2 regularisation (based on your implementation).
+%
+\begin{table}[!htbp]
+    \centering
+    \begin{tabular}{l|cc|ccc}
+    \toprule
+        Configuration & $\lambda_1$ & $\lambda_2$ & Val. Acc. (\%) & Train Error & Val. Error \\
+    \midrule
+        Conservative       & 0.0005 & 0.0005 & 75.6 & 0.855 & 0.859 \\
+        L2-dominant-1      & 0.0001 & 0.0005 & 82.1 & 0.583 & 0.600 \\
+        Balanced           & 0.0005 & 0.001 & 73.9 & 0.938 & 0.938 \\
+        L2-dominant-2      & 0.0001 & 0.001 & 79.7 & 0.685 & 0.692 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Results of L1+L2 Elastic Net regularization with varying hyperparameters.}
+    \label{tab:l1l2_combo}
+\end{table}
 }
 }
 
